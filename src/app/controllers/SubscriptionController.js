@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
 import Subscription from '../models/Subscription';
@@ -6,13 +7,34 @@ import NewSubscriptionMail from '../jobs/NewSubscriptionMail';
 import Queue from '../../lib/Queue';
 
 class SubscriptionController {
+    async index(req, res) {
+        const meetupsSubscribed = await Subscription.findAll({
+            where: { user_id: req.userId },
+            include: [
+                {
+                    model: Meetup,
+                    required: true,
+                    attributes: [
+                        'id',
+                        'title',
+                        'description',
+                        'location',
+                        'date'
+                    ],
+                    where: { date: { [Op.gt]: new Date() } }
+                }
+            ],
+            order: [[Meetup, 'date']]
+        });
+
+        return res.json(meetupsSubscribed);
+    }
+
     async store(req, res) {
         const { id } = req.params;
 
         const meetup = await Meetup.findByPk(id, {
-            include: [
-                { model: User, as: 'user', attributes: ['id', 'name', 'email'] }
-            ]
+            include: [{ model: User, attributes: ['id', 'name', 'email'] }]
         });
 
         if (!meetup) {
@@ -49,7 +71,6 @@ class SubscriptionController {
             include: [
                 {
                     model: Meetup,
-                    as: 'meetup',
                     required: true,
                     where: { date: meetup.date }
                 }

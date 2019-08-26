@@ -10,12 +10,10 @@ class OrganizingController {
             include: [
                 {
                     model: User,
-                    as: 'user',
                     attributes: ['id', 'name']
                 },
                 {
                     model: File,
-                    as: 'image',
                     attributes: ['id', 'name', 'path']
                 }
             ]
