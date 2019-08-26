@@ -118,6 +118,34 @@ class MeetupController {
             image_id
         });
     }
+
+    async delete(req, res) {
+        const meetup = await Meetup.findByPk(req.params.id);
+
+        if (!meetup) {
+            return res
+                .status(404)
+                .json({ error: 'There is no meetup with id informed' });
+        }
+
+        if (req.userId !== meetup.user_id) {
+            return res.status(401).json({
+                error: 'You cannot cancel a meetup that is not yours'
+            });
+        }
+
+        const meetupHasOccured = isBefore(meetup.date, new Date());
+
+        if (meetupHasOccured) {
+            return res
+                .status(401)
+                .json({ error: 'You cannot cancel a meetup that has occured' });
+        }
+
+        await meetup.destroy();
+
+        return res.json({ message: 'Meetup was deleted' });
+    }
 }
 
 export default new MeetupController();
