@@ -17,6 +17,7 @@ routes.post('/users', UserController.store);
 
 routes.use(authMiddleware);
 
+routes.get('/meetups', MeetupController.index);
 routes.post('/meetups', MeetupController.store);
 routes.put('/meetups/:id', MeetupController.update);
 
