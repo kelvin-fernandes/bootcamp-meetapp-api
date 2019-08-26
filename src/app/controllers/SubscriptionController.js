@@ -1,11 +1,19 @@
 import Meetup from '../models/Meetup';
+import User from '../models/User';
 import Subscription from '../models/Subscription';
+
+import NewSubscriptionMail from '../jobs/NewSubscriptionMail';
+import Queue from '../../lib/Queue';
 
 class SubscriptionController {
     async store(req, res) {
         const { id } = req.params;
 
-        const meetup = await Meetup.findByPk(id);
+        const meetup = await Meetup.findByPk(id, {
+            include: [
+                { model: User, as: 'user', attributes: ['id', 'name', 'email'] }
+            ]
+        });
 
         if (!meetup) {
             return res
@@ -41,6 +49,7 @@ class SubscriptionController {
             include: [
                 {
                     model: Meetup,
+                    as: 'meetup',
                     required: true,
                     where: { date: meetup.date }
                 }
@@ -58,9 +67,11 @@ class SubscriptionController {
             meetup_id: id
         });
 
-        // TODO Sempre que um usuário se inscrever no meetup, envie um e-mail ao
-        // organizador contendo os dados relacionados ao usuário inscrito. O
-        // template do e-mail fica por sua conta :)
+        const subscriber = await User.findByPk(req.userId, {
+            attributes: ['id', 'name', 'email']
+        });
+
+        await Queue.add(NewSubscriptionMail.key, { subscriber, meetup });
 
         return res.json(subscription);
     }
