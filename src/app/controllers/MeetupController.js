@@ -8,7 +8,7 @@ class MeetupController {
     async index(req, res) {
         const meetups = await Meetup.findAll({
             where: { user_id: req.userId },
-            attributes: ['id', 'title', 'description', 'locale', 'date'],
+            attributes: ['id', 'title', 'description', 'location', 'date'],
             include: [
                 {
                     model: User,
@@ -30,7 +30,7 @@ class MeetupController {
         const schema = Yup.object().shape({
             title: Yup.string().required(),
             description: Yup.string().required(),
-            locale: Yup.string().required(),
+            location: Yup.string().required(),
             date: Yup.date().required(),
             image_id: Yup.number().required()
         });
@@ -41,7 +41,7 @@ class MeetupController {
             });
         });
 
-        const { title, description, locale, date, image_id } = req.body;
+        const { title, description, location, date, image_id } = req.body;
 
         const dateIsBeforeToday = isBefore(parseISO(req.body.date), new Date());
 
@@ -54,7 +54,7 @@ class MeetupController {
         const meetup = await Meetup.create({
             title,
             description,
-            locale,
+            location,
             date,
             image_id,
             user_id: req.userId
@@ -67,7 +67,7 @@ class MeetupController {
         const schema = Yup.object().shape({
             title: Yup.string(),
             description: Yup.string(),
-            locale: Yup.string(),
+            location: Yup.string(),
             date: Yup.date(),
             image_id: Yup.number()
         });
@@ -104,7 +104,7 @@ class MeetupController {
             id,
             title,
             description,
-            locale,
+            location,
             date,
             image_id
         } = await meetup.update(req.body);
@@ -113,7 +113,7 @@ class MeetupController {
             id,
             title,
             description,
-            locale,
+            location,
             date,
             image_id
         });
