@@ -1,47 +1,76 @@
-# Desafio 02. Iniciando aplicação
+# Meetapp API
 
-Crie uma aplicação do zero utilizando Express.
+This API makes part of a bootcamp project. It's a Rocketseat's bootcamp, where I learn a stack called by them: OmniStack, using the following technologies NodeJS (backend), ReactJS (frontend) and React Native (mobile). Full JS <3
 
-Nessa aplicação configure as seguintes ferramentas:
+This project is about an app that aggregates events for developers (an acronym for Meetup + App).
 
-- Sucrase + Nodemon;
-- ESLint + Prettier + EditorConfig;
-- Sequelize (Utilize PostgresSQL ou MySQL);
+## Getting Started
 
-Durante esse desafio você dará início a um novo projeto no Bootcamp, esse projeto será desenvolvido aos poucos até o fim da sua jornada onde você terá uma aplicação completa envolvendo back-end, front-end e mobile.
+So, to get this project alive:
 
-Esse projeto também será utilizado para a certificação do bootcamp, então bora pro código!
+-   run docker containers: postgres and redis.
+-   run migrations to create the database schema.
+-   setup the .env file.
 
-## Aplicação
+### Prerequisites
 
-A aplicação que iremos dar início ao desenvolvimento a partir de agora é um app agregador de eventos para desenvolvedores chamado Meetapp (um acrônimo à Meetup + App).
+Follow the instructions bellow to get the docker containers running.
 
-Nesse primeiro desafio vamos criar algumas funcionalidades básicas que aprendemos ao longo das aulas até aqui.
+```sh
+$ docker run --name database -e POSTGRES_PASSWORD=docker -p 5432:5432 -d postgres
+$ docker run --name redismeetapp -p 6379:6379 -d -t redis:alpine
+```
 
-## Funcionalidades
+Copy the .env.example and setup a new .env file on project root folder, where it will have things like:
 
-Abaixo estão descritas as funcionalidades que você deve adicionar em sua aplicação.
+```
+# Postgres
+DB_HOST=localhost
+DB_USER=user
+DB_PASS=pass
+DB_NAME=dbname
+```
 
-### Autenticação
+### Installing
 
-Permita que um usuário se autentique em sua aplicação utilizando e-mail e senha.
+So, to get a development env running you need to run the following steps.
 
-- A autenticação deve ser feita utilizando JWT.
-- Realize a validação dos dados de entrada;
+This will install all application dependencies.
 
-### Cadastro e atualização de usuários
+```sh
+$ yarn
+```
 
-Permita que novos usuários se cadastrem em sua aplicação utilizando nome, e-mail e senha.
+Using Migrations, you need to run this command to make the database schema.
 
-Para atualizar a senha, o usuário deve também enviar um campo de confirmação com a mesma senha.
+```sh
+$ yarn sequelize db:migrate
+```
 
-- Criptografe a senha do usuário para segurança.
-- Realize a validação dos dados de entrada;
+And finally.
 
-## Entrega
+```
+yarn dev
+```
 
-Esse desafio **não precisa ser entregue** e não receberá correção, mas você pode ver o resultado do código do desafio aqui: https://github.com/Rocketseat/bootcamp-gostack-desafio-02
+(Optional) Running this command bellow, you will get a queue to process a notification sent by email. To get this working, it's necessary that a Redis container is being running. Also, you have to make an account on [mailtrap.io](https://mailtrap.io) to get an inbox, so you setup this inbox infos on .env file.
 
-Após concluir o desafio, adicionar esse código ao seu Github é uma boa forma de demonstrar seus conhecimentos para oportunidades futuras.
+```
+yarn queue
+```
 
-“Não espere para plantar, apenas tenha paciência para colher”!
+For while, to request some data it's simple, open [Imsomnia](https://insomnia.rest/download/) and follow these steps: Click on workspace name > Import/Export > Import Data > From File. Select imsomnia.json that is on the root of the project folder.
+
+1. Create a user.
+2. Create a session.
+3. Copy and paste token in global variable.
+4. Enjoy yourself.
+
+## Built With
+
+-   [NodeJS](https://nodejs.org/en/download/) - JavaScript runtime
+-   [Express](https://devdocs.io/express/) - Web Framework to built REST API
+-   [Yarn](https://yarnpkg.com/en/docs/install) - Dependency Management
+-   [Postgres](https://www.postgresql.org/docs/) - Main database
+-   [Bee-queue](https://github.com/bee-queue/bee-queue) - Job/Task queue
+-   [Redis](https://redis.io/documentation) - In-memory data structure store
